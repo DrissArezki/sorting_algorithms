@@ -5,17 +5,17 @@
  * @array: array with elmts
  * @size: size of array
  * @a: int one
- * @b: int twio
+ * @b: int two
+ *
  * Return: void
  */
-
 void swap_func(int *array, size_t size, int *a, int *b)
 {
 	if (*a != *b)
 	{
-		*a ^= *b;
-		*b ^= *a;
-		*a ^= *b;
+		*a = *a + *b;
+		*b = *a - *b;
+		*a = *a - *b;
 		print_array((const int *)array, size);
 	}
 }
@@ -29,8 +29,7 @@ void swap_func(int *array, size_t size, int *a, int *b)
  *
  * Return: size_t
  */
-
-size_t lomuto_part(int *array, size_t size, size_t min, size_t max)
+size_t lomuto_part(int *array, size_t size, ssize_t min, ssize_t max)
 {
 	int i, j, piv = array[max];
 
@@ -40,14 +39,40 @@ size_t lomuto_part(int *array, size_t size, size_t min, size_t max)
 	swap_func(array, size, &array[i], &array[max]);
 
 	return (i);
+}
+
+/**
+ * quicks - sorts an array of integers in ascending order
+ * @array: array to sort
+ * @size: size of the array
+ * @min: minimum index
+ * @max: maximum index
+ *
+ * Return: void
+ */
+void quicks(int *array, size_t size, ssize_t min, ssize_t max)
+{
+	if (min < max)
+	{
+		size_t p = lomuto_part(array, size, min, max);
+
+		quicks(array, size, min, p - 1);
+		quicks(array, size, p + 1, max);
+	}
+}
 
 /**
  * quick_sort - sorts an array of integers in ascending order
  * @array: array to sort
  * @size: size of the array
+ *
  * Return: void
  */
 
 void quick_sort(int *array, size_t size)
 {
+	if (!array || !size)
+		return;
 
+	quicks(array, size, 0, size - 1);
+}
