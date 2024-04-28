@@ -1,78 +1,95 @@
 #include "sort.h"
 
+void swap_ints(int *a, int *b);
+int lomuto_partition(int *array, size_t size, int left, int right);
+void lomuto_sort(int *array, size_t size, int left, int right);
+void quick_sort(int *array, size_t size);
+
 /**
- * swap_func - function that swaps two ints
- * @array: array with elmts
- * @size: size of array
- * @a: int one
- * @b: int two
- *
- * Return: void
+ * swap_ints - Swap two integers in an array.
+ * @a: The first integer to swap.
+ * @b: The second integer to swap.
  */
-void swap_func(int *array, size_t size, int *a, int *b)
+void swap_ints(int *a, int *b)
 {
-	if (*a != *b)
+	int tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+/**
+ * lomuto_partition - Order a subset of an array of integers according to
+ *                    the lomuto partition scheme (last element as pivot).
+ * @array: The array of integers.
+ * @size: The size of the array.
+ * @left: The starting index of the subset to order.
+ * @right: The ending index of the subset to order.
+ *
+ * Return: The final partition index.
+ */
+int lomuto_partition(int *array, size_t size, int left, int right)
+{
+	int *pivot, above, below;
+
+	pivot = array + right;
+	for (above = below = left; below < right; below++)
 	{
-		*a = *a + *b;
-		*b = *a - *b;
-		*a = *a - *b;
-		print_array((const int *)array, size);
+		if (array[below] < *pivot)
+		{
+			if (above < below)
+			{
+				swap_ints(array + below, array + above);
+				print_array(array, size);
+			}
+			above++;
+		}
+	}
+
+	if (array[above] > *pivot)
+	{
+		swap_ints(array + above, pivot);
+		print_array(array, size);
+	}
+
+	return (above);
+}
+
+/**
+ * lomuto_sort - Implement the quicksort algorithm through recursion.
+ * @array: An array of integers to sort.
+ * @size: The size of the array.
+ * @left: The starting index of the array partition to order.
+ * @right: The ending index of the array partition to order.
+ *
+ * Description: Uses the Lomuto partition scheme.
+ */
+void lomuto_sort(int *array, size_t size, int left, int right)
+{
+	int part;
+
+	if (right - left > 0)
+	{
+		part = lomuto_partition(array, size, left, right);
+		lomuto_sort(array, size, left, part - 1);
+		lomuto_sort(array, size, part + 1, right);
 	}
 }
 
 /**
- * lomuto_part - partition using the pivot
- * @array: array to use
- * @size: size of the array
- * @min: min index of the range
- * @max: max index
+ * quick_sort - Sort an array of integers in ascending
+ *              order using the quicksort algorithm.
+ * @array: An array of integers.
+ * @size: The size of the array.
  *
- * Return: size_t
+ * Description: Uses the Lomuto partition scheme. Prints
+ *              the array after each swap of two elements.
  */
-size_t lomuto_part(int *array, size_t size, ssize_t min, ssize_t max)
-{
-	int i, j, piv = array[max];
-
-	for (i = j = min; j < max; j++)
-		if (array[j] < piv)
-			swap_func(array, size, &array[j], &array[i++]);
-	swap_func(array, size, &array[i], &array[max]);
-
-	return (i);
-}
-
-/**
- * quicks - sorts an array of integers in ascending order
- * @array: array to sort
- * @size: size of the array
- * @min: minimum index
- * @max: maximum index
- *
- * Return: void
- */
-void quicks(int *array, size_t size, ssize_t min, ssize_t max)
-{
-	if (min < max)
-	{
-		size_t p = lomuto_part(array, size, min, max);
-
-		quicks(array, size, min, p - 1);
-		quicks(array, size, p + 1, max);
-	}
-}
-
-/**
- * quick_sort - sorts an array of integers in ascending order
- * @array: array to sort
- * @size: size of the array
- *
- * Return: void
- */
-
 void quick_sort(int *array, size_t size)
 {
-	if (!array || !size)
+	if (array == NULL || size < 2)
 		return;
 
-	quicks(array, size, 0, size - 1);
+	lomuto_sort(array, size, 0, size - 1);
 }
