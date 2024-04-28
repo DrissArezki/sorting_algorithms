@@ -4,7 +4,7 @@
  * max_diff - calculating the gap
  * @size: size of the array
  *
- * return: size_t element
+ * Return: size_t element
  */
 size_t max_diff(size_t size)
 {
